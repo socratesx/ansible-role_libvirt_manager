@@ -1,6 +1,6 @@
 ---
 
-# These two tasks create and set the facts regarding the user's defines in vms.yml file. 
+# These two tasks create and set the facts regarding the user's defines in vars/main.yml file. 
 # The first command creates a dictionary with several key,value sets that will be used on the next imported tasks.
 #
 # Facts returned:
