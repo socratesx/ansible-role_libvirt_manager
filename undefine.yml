@@ -1,0 +1,10 @@
+---
+
+- hosts: vm_host  # This example playbook will remove the VMs that are defined in the vms.yml.
+  become: yes
+  become_user: root
+  become_method: su
+  tasks: 
+    - include_vars: roles/virt_provisioner/vars/main.yml
+    - import_tasks: roles/virt_provisioner/tasks/undefine_vms.yml
+

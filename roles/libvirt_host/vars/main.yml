@@ -1,0 +1,39 @@
+---
+# Variables File. In this File you can set variables for the KVM Host. You can override the following variables:
+#
+# vm_host_br_name               String: Name of the Bridge Interface of the KVM host
+# vm_host_br_ip                 String: IP Address of the Bridge Interface
+# vm_host_br_netmask            String: Netmask of the Bridge Interface
+# vm_host_br_gw                 string: Gateway IP address of th Bridge
+# vm_host_br_prefix_size        String: The netmask cidr notation, default is 24
+# vm_host_br_dns                List:   This list contains the dns nameservers ip addresses
+# vm_host_br_if                 String: The interface that will be added to the Bridge. 
+# vm_host_br_network            String: The network address of the bridge IP - Optional, it is calculated automatically
+# vm_host_br_broadcast          String: The broadcast address of the bridge IP - Optional, it is calculated automatically
+# vm_host_search_domain         List:   The search domain of the Host. Enter each domain as a list item.
+# libvirt_boot_image_folder     String: The Folder containing the iso boot images of the VMs that will be used during installation. Warning: leave default if you get permission errors.
+# libvirt_vm_disk_folder        String: The Folder containing the hdds of the defined VMs.
+# vm_host_repos_ubuntu          List:   This list contains additional repos for the ubuntu distro, since virt-install is not included in the default repo. 
+# packages                      Dict:   This dict contains the packages to be installed in the target machine so it can run libvirt. 
+#
+# For more information on how to set these variables check the defaults/main.yml file. It is best to override only the variables that you need different.
+#
+# Example:
+
+# Since my setup is located in Greece, I overrided the default ubuntu repos selecting the nearest location.
+vm_host_repos_ubuntu:
+  - "deb http://gr.archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} main universe multiverse restricted"
+  - "deb http://gr.archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-security main universe multiverse restricted"
+  - "deb http://gr.archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-updates main universe multiverse restricted"
+  - "deb http://gr.archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-backports main universe multiverse restricted"
+
+# I want the KVM host to have the following IP settings. Everything else I can leave them to their defaults
+#vm_host_br_ip: '192.168.2.3'
+#vm_host_br_netmask: '255.255.255.0'
+#vm_host_br_gw: '192.168.2.1'
+
+# I override the default search domain which is undefined in default vars, to my search domain 'soc.home'
+vm_host_search_domain:
+  - 'soc.home'
+
+

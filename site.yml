@@ -1,0 +1,20 @@
+---
+
+- hosts: vm_host # The Host Computer that will be the KVM Host 
+  become: yes
+  become_user: root
+  become_method: su
+  gather_facts: no
+  tasks:
+    - name: Bootstrap - Check if Python is Installed. Install if Missing
+      raw: PKG_MANAGER=$( command -v yum || command -v apt-get ) && $PKG_MANAGER -y update && test -e /usr/bin/python || $PKG_MANAGER install -y python
+
+
+- hosts: vm_host
+  become: yes
+  become_user: root
+  become_method: su
+  roles:
+    - libvirt_host   # This role will preconfigure the target to act as a libvirt vm host
+    - virt_provisioner # This role will provision new VMs
+

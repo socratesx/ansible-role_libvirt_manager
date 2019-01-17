@@ -1,0 +1,63 @@
+---
+
+# This file is used to change some libvirt defaults, such as the boot and disk images folders and mainly to define new VMs.
+# vms is the top dict. Do not change the name of this variable!  
+# New VMs are defined as new dict items inside the vms dict, using a key,value pair. The key is a unique name for id purposes in the role. 
+# The value is the whole VM definition where its key,value pairs will be used to construct the virt-install commands.
+# Disks and Networks are lists. Even if you have one disk or net, you must define them as a one-item lists!
+# Apart from these you can use any virt-install option you need. You just define the option as a key with the argument as the value.
+# In case of single options that take no arguments, you just specify the key and use an empty string as a value.
+
+#The Following Example is used as it is in my case to define my home infrastructure project. 
+#It consists of a router and a storage VM. The vm_host is an Ubuntu server 18.04.1 LTS Bionic Reaver.
+
+libvirt_vm_disk_folder: '/vm-images/'
+
+vms:
+  pfsense:
+    name: pfSense
+    vcpus: '1,maxvcpus=2'
+    cpu: host
+    memory: '1024,maxmemory=2048'
+    os-variant: freebsd11.1
+    boot: hd,cdrom,menu=on
+# Special attention here. The following declaration "disk" is defined with no size= value. 
+# Virt-install understands these disks as pre-existing. In this example the pfsense.qcow2 file should be in the files/ folder. 
+# If instead a new disk is defined here then the following commented cdrom line would be used as well.
+    disks: 
+      - "{{libvirt_vm_disk_folder}}pfsense/pfsense.qcow2,bus=virtio" 
+    networks: 
+      - bridge=br0,model=virtio
+      - bridge=br0,model=virtio
+    #cdrom: "http://nyifiles.pfsense.org/mirror/downloads/pfSense-CE-2.4.4-RELEASE-p1-amd64.iso.gz" If it was a first-time install I would use this argument, but since I am migrating, I have the disk ready so no need to download a new image and install from scratch.
+    graphics: vnc,listen=0.0.0.0,port=-1
+    virt-type: kvm
+    noautoconsole: ''
+    hvm: ''
+    autostart: ''
+
+
+
+  xigmanas:
+    name: Xigmanas
+    vcpus: '2,maxvcpus=4'
+    cpu: host
+    memory: '4096,maxmemory=5150'
+    os-variant: freebsd11.1
+    boot: hd,cdrom,menu=on
+    cdrom: 'https://downloads.sourceforge.net/project/xigmanas/XigmaNAS-11.2.0.4/11.2.0.4.6315/XigmaNAS-x64-LiveCD-11.2.0.4.6315.iso'   
+# The first disk will be created during virt-install run as it defines a 'size=' option and libvirt understands that this will be a new disk.
+# The following two disks added as raw block devices to the VM since they contain data from the previous installation.
+# This VM will require to follow installation steps after it is powered on since the it is a new installation from scratch.
+    disks: 
+      - "{{libvirt_vm_disk_folder}}xigmanas/xigmanas.qcow2,size=10,bus=virtio"    
+      - '/dev/sdc'
+      - '/dev/sde'
+    networks: 
+      - bridge=br0,model=virtio
+    graphics: vnc,listen=0.0.0.0,port=-1
+    virt-type: kvm
+    noautoconsole: ''
+    hvm: ''
+    autostart: ''
+  

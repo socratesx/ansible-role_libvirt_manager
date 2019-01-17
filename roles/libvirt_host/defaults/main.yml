@@ -1,0 +1,59 @@
+---
+
+# Role Default Variables File
+# NOTICE: You do not need to touch any variable in this file. Instead you can override any variable needed in the vars/main.yml file!
+
+# KVM HOST Default Variables for the Bridge Network Settings.
+# The role will create a new bridge interface to the target host. The following variables will be used for that bridge Interface.
+# If not specified in vars/main.yml, the variables will get the current network values of the target host. 
+# In this case ensure that the host has valid network configuration
+
+vm_host_br_ip: "{{ansible_default_ipv4.address}}"         
+vm_host_br_netmask: "{{ansible_default_ipv4.netmask}}"    
+vm_host_br_gw: "{{ansible_default_ipv4.gateway}}"         
+vm_host_br_prefix_size: '24'                              
+vm_host_br_dns:                                          
+  - "{{ansible_default_ipv4.gateway}}"
+  - '1.1.1.1'
+vm_host_br_name: 'br0'
+vm_host_search_domain:
+
+# The following variables do not need overriding since they are calculated automatically from the current settings.
+#
+vm_host_br_if: "{{ ansible_default_ipv4.interface }}"
+vm_host_br_network: "{{vm_host_br_ip|regex_replace('\\d{1,3}$','0')}}"
+vm_host_br_broadcast: "{{vm_host_br_ip|regex_replace('\\d{1,3}$','255')}}"
+
+
+# Some Default repos for Ubuntu. These are required since Virt-install is not included in Ubuntu's default repos
+#
+vm_host_repos_ubuntu:
+  - "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} main universe"
+  - "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-security main universe"
+  - "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-updates main universe"
+  - "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-backports main universe"
+
+
+# The list of required packages to install in the KVM Host target machine, per distro. It is important to not change the structure of this var. 
+# You can add more entries if you want more packages or more distros. 
+# Beware though that the role has been tested only on debian 8,9, ubuntu 16,18 and centos 7. 
+# If you want to test on another distro add another key,value pair. The Key must have the same value of the ansible_distribution fact.
+#
+packages:
+  Debian:
+    - qemu-kvm
+    - libvirt-clients
+    - qemu-utils
+    - libvirt-daemon-system
+    - virtinst    
+  Ubuntu:
+    - qemu-kvm
+    - libvirt-bin
+    - virtinst
+  CentOS:
+    - libselinux-python
+    - qemu-kvm
+    - libvirt
+    - virt-install
+
+

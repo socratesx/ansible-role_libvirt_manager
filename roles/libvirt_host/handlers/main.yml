@@ -1,0 +1,21 @@
+---
+
+
+- name: start libvirtd
+  service:
+    name: libvirtd
+    state: started
+    enabled: yes
+
+- name: restart network centos
+  service:
+    name: network
+    state: restarted
+
+# Raw command instead of service, since debian requires to flush the network interface before stting up a new address.
+# This needs to be an oneliner command since flushing the interface will lose access to the target
+- name: restart network debian
+  raw: "ip addr flush dev {{ansible_default_ipv4.interface}} && systemctl restart networking"
+
+
+

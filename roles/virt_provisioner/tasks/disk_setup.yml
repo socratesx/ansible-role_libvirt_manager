@@ -1,0 +1,15 @@
+---
+
+- name: Creating VM Disk drive Directories based on the items on dirs fact
+  file:
+    path: "{{item}}"
+    state: directory
+  with_items: "{{ args.dirs}}"
+
+- name: If the user defined any pre-existing Disks, then this task will copy them to the VM folder on VM Host. The key,values of the existing_disks fact will be used for this task.
+  copy:
+    src: "{{item}}"
+    dest: "{{args.existing_disks[item]}}"
+    force: no
+  with_items: "{{ args.existing_disks.keys() }}"
+

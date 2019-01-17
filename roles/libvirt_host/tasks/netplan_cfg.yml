@@ -1,0 +1,52 @@
+---
+
+- name: Disable Netplan Cloud net Capabilities
+  lineinfile:
+    path: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+    owner: root
+    group: root
+    create: yes
+    state: present
+    line: "network: {config: disabled}"
+  ignore_errors: yes
+
+- name: "INFO: Default IPv4 Interface"
+  debug:
+    msg: "{{ansible_default_ipv4.interface}}"
+
+- name: Create Netplan Configuration File if define bridge Interface does not exist (Force = No, If configuration file exists the module will not replace it. If you want to overwrite, use force=yes )
+  template:
+    src: netplan_bridge_config.j2
+    dest: /etc/netplan/10-bridge_config.yaml
+    owner: root
+    group: root
+    force: no
+  when: ansible_default_ipv4.interface != vm_host_br_name
+
+- name: Check if Bridge configuration file exists
+  stat:
+    path: /etc/netplan/10-bridge_config.yaml
+  register: br_config
+
+- name: Check if Netplan default Configuration File exists
+  stat:
+    path: /etc/netplan/50-cloud-init.yaml
+  register: old_config
+
+- name: Renaming default Netplan config file, adding .old extention
+  copy:
+    remote_src: yes
+    src: /etc/netplan/50-cloud-init.yaml
+    dest: /etc/netplan/50-cloud-init.yaml.old
+  ignore_errors: yes
+  when: old_config.stat.exists
+
+- name: Deleting default Netplan configuration file
+  file:
+    path: /etc/netplan/50-cloud-init.yaml
+    state: absent
+
+- name: Applying Netplan new Configuration
+  command: 'netplan apply'
+  when: br_config.stat.exists
+

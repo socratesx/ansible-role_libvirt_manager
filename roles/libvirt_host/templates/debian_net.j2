@@ -1,0 +1,27 @@
+auto lo
+iface lo inet loopback
+
+auto {{ansible_default_ipv4.interface}}
+
+iface {{ansible_default_ipv4.interface}} inet manual
+iface {{ansible_default_ipv4.interface}} inet6 manual
+
+auto {{vm_host_br_name}}
+iface {{vm_host_br_name}} inet static
+        address {{vm_host_br_ip}}
+        netmask {{vm_host_br_netmask}}
+        network {{vm_host_br_network}}
+        broadcast {{vm_host_br_broadcast}}
+        gateway {{vm_host_br_gw}}
+        bridge_ports {{ansible_default_ipv4.interface}}
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+        dns-nameservers {{vm_host_br_dns|join(' ')}}
+        {% if vm_host_search_domain -%}
+        dns-search {{vm_host_search_domain|join(' ')}}
+        {%- endif %}
+
+#allow autoconf for ipv6
+iface {{vm_host_br_name}} inet6 auto
+        accept_ra 1

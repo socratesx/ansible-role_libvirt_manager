@@ -1,0 +1,10 @@
+---
+
+- name: Create network configuration for Debian
+  template:
+    src: debian_net.j2
+    dest: /etc/network/interfaces
+  when: ansible_default_ipv4.interface != vm_host_br_name
+  notify:
+    - restart network debian
+

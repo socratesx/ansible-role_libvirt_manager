@@ -1,0 +1,17 @@
+DEVICE={{ vm_host_br_name }}
+BOOTPROTO="static"
+IPADDR={{ vm_host_br_ip }}
+NETMASK={{ vm_host_br_netmask }}
+GATEWAY={{ vm_host_br_gw }}
+{% set count = 1 -%}
+{% for item in vm_host_br_dns -%}
+DNS{{loop.index}}={{ item }}
+{% set count = count +1 -%}
+{% endfor -%}
+ONBOOT="yes"
+TYPE="Bridge"
+NM_CONTROLLED="no"
+{% if vm_host_search_domain %}
+DOMAIN={{ vm_host_search_domain|join(' ') }}
+{% endif %}
+

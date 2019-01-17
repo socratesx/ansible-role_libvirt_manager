@@ -1,0 +1,21 @@
+---
+
+- name: Gathering the list of Defined VMs on the vm host
+  command: virsh list --all
+  register: pre_result
+
+- name: If the VM is not defined in the VM host, then this task runs the command to create it. 
+  command: "{{item}}"
+  with_items: "{{cmds}}"
+  register: cmd_result
+  ignore_errors: yes
+  when: item|regex_search('(?:--name )([\\w]*)','\\1')|join not in pre_result.stdout
+
+- name: Gathering the list of Defined VMs on the vm host
+  command: virsh list --all
+  register: post_result
+
+
+- name: Running VMS on target
+  debug:
+    msg: "{{post_result.stdout|to_nice_json}}"

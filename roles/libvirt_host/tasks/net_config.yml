@@ -1,0 +1,18 @@
+---
+
+- name: Creating Netplan Configuration if Target uses Netplan
+  include_tasks: netplan_cfg.yml
+  when: 
+    - ansible_facts['distribution'] == "Ubuntu"
+    - ansible_facts['distribution_major_version'] >= "18" 
+
+- name: Setting up Bridge Interface and adding the current Interface, Target= RedHat
+  include_tasks: centos_net.yml
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Setting up Bridge Interface and adding the current Interface, Target= Debian 
+  include_tasks: debian_net.yml
+  when: 
+    - ansible_facts['os_family'] == "Debian" 
+    - not (ansible_facts['distribution_release'] == "bionic" )
+

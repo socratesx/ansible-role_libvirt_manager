@@ -1,0 +1,22 @@
+---
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    {{ ansible_default_ipv4.interface }}:
+      dhcp4: false
+      dhcp6: false
+      addresses: []
+
+  bridges:
+    {{ vm_host_br_name }}:
+      dhcp4: false
+      addresses: [{{ vm_host_br_ip }}/{{vm_host_br_prefix_size}}]
+      gateway4:  {{ vm_host_br_gw }}
+      interfaces: [{{ vm_host_br_if }}]
+      parameters:
+        stp: false
+        forward-delay: 0
+      nameservers:
+        addresses: {{ vm_host_br_dns| to_yaml }}
+        search: {{vm_host_search_domain| to_yaml}}

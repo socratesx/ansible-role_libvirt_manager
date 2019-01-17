@@ -1,0 +1,21 @@
+---
+
+- name: Checking if Bridge Configuration File exists
+  stat:
+    path: "/etc/sysconfig/network-scripts/ifcfg-{{vm_host_br_name}}"
+  register: br_config
+
+- name: Create a Bridge Configuration file in /etc/sysconfig/network-scripts/
+  template:
+    src: centos_bridge.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{vm_host_br_name}}"
+  when: not br_config.stat.exists
+
+- name: Replace default interface Configuration file so to add the interface to the bridge
+  template:
+    src: centos_interface.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ansible_default_ipv4.interface}}"
+  when: not ansible_default_ipv4.interface == vm_host_br_name
+  notify:
+    - restart network centos
+  

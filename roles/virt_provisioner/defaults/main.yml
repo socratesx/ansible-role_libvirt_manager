@@ -1,0 +1,4 @@
+---
+
+libvirt_boot_image_folder: '/var/lib/libvirt/boot/'
+libvirt_vm_disk_folder: 'var/lib/libvirt/images/'
