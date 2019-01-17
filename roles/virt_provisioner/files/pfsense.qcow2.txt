@@ -1,0 +1,1 @@
+This is sample file containing nothing. Normally, this would be a disk file or a link to a disk file that will be copied over to the target host.
