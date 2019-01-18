@@ -25,11 +25,11 @@ vms:
 # Virt-install understands these disks as pre-existing. In this example the pfsense.qcow2 file should be in the files/ folder. 
 # If instead a new disk is defined here then the following commented cdrom line would be used as well.
     disks: 
-      - "{{libvirt_vm_disk_folder}}pfsense/pfsense.qcow2,bus=virtio" 
+      - "{{libvirt_vm_disk_folder}}pfsense/pfsense.qcow2,size=5,bus=virtio" 
     networks: 
       - bridge=br0,model=virtio
       - bridge=br0,model=virtio
-    #cdrom: "http://nyifiles.pfsense.org/mirror/downloads/pfSense-CE-2.4.4-RELEASE-p1-amd64.iso.gz" If it was a first-time install I would use this argument, but since I am migrating, I have the disk ready so no need to download a new image and install from scratch.
+    cdrom: "http://nyifiles.pfsense.org/mirror/downloads/pfSense-CE-2.4.4-RELEASE-p1-amd64.iso.gz" If it was a first-time install I would use this argument, but since I am migrating, I have the disk ready so no need to download a new image and install from scratch.
     graphics: vnc,listen=0.0.0.0,port=-1
     virt-type: kvm
     noautoconsole: ''
