@@ -34,7 +34,7 @@ The virt_provisioner does exactly what is sounds. In particular:
   <li>Invokes the virt-install commands for each Defined VM. </li>
 </ol>
 
-There is an extra task included in the role's task folder which can be used indepedently for deleting vms. See the undefine.yml playbook file to see an example on how to use this task. The only requirement for the undefine_vm.yml task is to provide a dictionary in the form:        
+There is an extra task included in the role's task folder which can be used indepedently for deleting vms. See the undefine.yml playbook file to see an example on how to use this task. The only requirement for the undefine_vm.yml task is to provide a vars dictionary in the form:        
 
     vms: 
       k1:
