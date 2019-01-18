@@ -1,6 +1,7 @@
 ---
 # These two tasks create and set the facts regarding the user's defines in vars/main.yml file.
-# The first command creates a dictionary with several key,value sets that will be used on the next imported tasks.
+# The first command creates a dictionary with several key,value sets that will be used on the next playbooks.
+# The facts that are set here are the resulting dictionaries of the template files set_facts.j2 and set_commands.j2
 #
 # Facts returned:
 # cdrom_args      contains the user entries in each VM cdrom argument.
@@ -15,105 +16,18 @@
 # args            contains all the above variables.
 # cmds            contains the virt-install commands to be invoked on the target host.
 #
-# Required Variables:
-# libvirt_boot_image_folder   String: Folder Path of the libvirt boot images
-# vms                         Dict: Contains the VMs to be provisioned in vars/main.yml
 
-- name: Reading the VMs File and Setting the facts
+- name: Reading the vars/main.yml File and Setting the VM facts
   set_fact:
-    args: >
-      {% set cdrom_args=[] -%}
-      {%- set disk_args=[] -%}
-      {%- set urls=[] -%}
-      {%- set dirs=[] -%}
-      {%- set boot_images=[] -%}
-      {%- set compressed=[] -%}
-      {%- set remote_files=[] -%}
-      {%- set existing_disks={} -%}
-      {%- set boot_select={} -%}
-      {%- for vm in vms.values() -%}
-        {%- if vm.cdrom is defined -%}
-          {%- if vm.cdrom|regex_search( 'http|ftp' ) -%}
-            {{- urls.append( vm.cdrom ) -}}
-            {%- if vm.cdrom.endswith(( '.gz', '.bz2', '.zip' )) -%}
-              {{- compressed.append( vm.cdrom|basename ) -}}
-              {{- boot_select.__setitem__(vm.name, libvirt_boot_image_folder~( ( vm.cdrom|basename|splitext )[0] ) ) -}}
-              {{- boot_images.append(libvirt_boot_image_folder~( ( vm.cdrom|basename|splitext )[0] ) ) -}}
-            {%- else -%}
-              {{- boot_select.__setitem__( vm.name, libvirt_boot_image_folder~( vm.cdrom|basename ) ) -}}
-              {{- boot_images.append( libvirt_boot_image_folder~( vm.cdrom|basename ) ) -}}
-            {%- endif -%}
-          {%- else -%}
-            {%- if vm.cdrom | dirname -%}
-              {{- boot_images.append( vm.cdrom ) -}}
-              {{- boot_select.__setitem__( vm.name, vm.cdrom ) -}}
-            {%- else -%}
-              {{- remote_files.append( vm.cdrom ) -}}
-              {%- if vm.cdrom.endswith(( '.gz', '.bz2', '.zip' )) -%}
-                {{- compressed.append( vm.cdrom ) -}}
-                {{- boot_select.__setitem__( vm.name, libvirt_boot_image_folder~(( vm.cdrom|splitext )[0])) -}}
-                {{- boot_images.append(libvirt_boot_image_folder~(( vm.cdrom|splitext )[0])) -}}
-              {%- else -%}
-                {{- boot_images.append( libvirt_boot_image_folder~vm.cdrom ) -}}
-                {{- boot_select.__setitem__( vm.name, libvirt_boot_image_folder~vm.cdrom ) -}}
-              {%- endif -%}
-            {%- endif -%}
-          {% endif -%}
-          {{- cdrom_args.append( vm.cdrom ) -}}
-        {%- endif -%}
-        {%- for disk in vm.disks -%}
-          {%- if disk is defined and not disk|regex_search( '/dev/' ) -%}
-            {{- disk_args.append( disk ) -}}
-            {{- dirs.append( disk|dirname ) -}}
-            {%- if not disk|regex_search( 'size=' ) -%}
-              {{- existing_disks.__setitem__( disk|basename|regex_search( '^.[^,]*' ), disk|dirname ) -}}
-            {%- endif -%}
-          {%- endif -%}
-        {%- endfor -%}
-      {%- endfor -%}
-      {%- set args_dict= {
-      'cd_args': cdrom_args| list,
-      'hd_args': disk_args| list,
-      'boot_images': boot_images| list,
-      'compressed': compressed | list,
-      'remote_files': remote_files | list,
-      'urls': urls | list,
-      'dirs': dirs | list,
-      'existing_disks': existing_disks,
-      'boot_select': boot_select } -%}
-      {{ args_dict }}
+    args: "{{ lookup('template', 'set_facts.j2') }}"
 
-- name: Facts Gathered from VM definition File
+- name: Setting the list fact of the virt-install commands to be invoked on the target host
+  set_fact:
+    cmds: "{{ lookup('template', 'set_commands.j2') }}"
+
+- name: The Following facts were set
   debug:
-    msg: "{{ args }}"
-
-#  The following task reads the vms.yml file and builds a virt-install command string for every defined vm.
-#  Normally the command will be created by combining the key,value pairs in the vm definition files.
-#  This is true except the cdrom argument. If it is not an absolute path, it can be a filename.
-#  or a url so the end command will use an appropriate absolute path, where the image will be located on the vm host.
-#  Of course, since a VM can have more than one Network interfaces or disks defined,
-#  the arguments will be feeded from the corresponding list in the vars/main.yml.
-- name: Create Commands and store them in a list
-  set_fact:
-    cmds: >
-      {%- set cmds =[] -%}
-      {%- for vm in vms.values() -%}
-        {%- set cmd = ['virt-install'] -%}
-        {%- for key in vm.keys() -%}
-          {%- if key == 'networks' -%}
-            {%- for net in vm[key] -%}
-              {{ cmd.append( '--network '~net ) }}
-            {%- endfor -%}
-          {%- elif key == 'cdrom' -%}
-            {{ cmd.append('--'~key~' '~args.boot_select[vm.name]) }}
-          {%- elif key == 'disks' -%}
-            {%- for disk in vm.disks -%}
-              {{ cmd.append('--disk '~disk) }}
-            {%- endfor -%}
-          {%- else -%}
-            {{ cmd.append('--'~key~' '~vm[key]) }}
-          {%- endif -%}
-        {%- endfor -%}
-        {{ cmds.append( cmd |  join(" ")) }}
-      {%- endfor -%}
-      {{ cmds }}
+    msg: "{{ item }}"
+  with_items:
+    - "{{ args }}"
+    - "{{ cmds }}"

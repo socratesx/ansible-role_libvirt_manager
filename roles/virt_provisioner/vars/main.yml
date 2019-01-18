@@ -18,7 +18,7 @@ vms:
     name: pfSense
     vcpus: '1,maxvcpus=2'
     cpu: host
-    memory: '1024,maxmemory=2048'
+    memory: '512,maxmemory=768'
     os-variant: freebsd11.1
     boot: hd,cdrom,menu=on
 # Special attention here. The following declaration "disk" is defined with no size= value. 
@@ -42,7 +42,7 @@ vms:
     name: Xigmanas
     vcpus: '2,maxvcpus=4'
     cpu: host
-    memory: '4096,maxmemory=5150'
+    memory: '512,maxmemory=768'
     os-variant: freebsd11.1
     boot: hd,cdrom,menu=on
     cdrom: 'https://downloads.sourceforge.net/project/xigmanas/XigmaNAS-11.2.0.4/11.2.0.4.6315/XigmaNAS-x64-LiveCD-11.2.0.4.6315.iso'   
@@ -51,8 +51,6 @@ vms:
 # This VM will require to follow installation steps after it is powered on since the it is a new installation from scratch.
     disks: 
       - "{{libvirt_vm_disk_folder}}xigmanas/xigmanas.qcow2,size=10,bus=virtio"    
-      - '/dev/sdc'
-      - '/dev/sde'
     networks: 
       - bridge=br0,model=virtio
     graphics: vnc,listen=0.0.0.0,port=-1
