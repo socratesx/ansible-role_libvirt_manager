@@ -34,7 +34,16 @@ The virt_provisioner does exactly what is sounds. In particular:
   <li>Invokes the virt-install commands for each Defined VM. </li>
 </ol>
 
-There is an extra task included in the role's task folder which can be used indepedently for deleting vms. More on this later.
+There is an extra task included in the role's task folder which can be used indepedently for deleting vms. See the undefine.yml playbook file to see an example on how to use this task. The only requirement for the undefine_vm.yml task is to provide a dictionary in the form:        
+
+    vms: 
+      k1:
+        name: 'VMname1' 
+      k2:
+        name: 'VMname2'
+      ⋮
+      kx:
+        name: 'VMnamex'
 
 By finishing the playbook, the nd result will be a libvirt host that runs all the vms which are defined in the vm definition file. The role has completed its job. If any installation needed from now on in each VM, it is out of the scope of this role. The user may connect with VNC to each VM and completes any required tasks.
 
