@@ -8,7 +8,7 @@
   when: ansible_distribution == 'Ubuntu'
 
 - name: Installing Libvirt Packages and Depedencies
-  package: 
+  package:
      name: "{{ packages[ansible_distribution] }}"
      state: present
   notify:
