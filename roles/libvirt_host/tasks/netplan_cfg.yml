@@ -49,4 +49,3 @@
 - name: Applying Netplan new Configuration
   command: 'netplan apply'
   when: br_config.stat.exists
-
