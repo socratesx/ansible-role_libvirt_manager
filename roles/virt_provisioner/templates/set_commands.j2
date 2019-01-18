@@ -1,0 +1,22 @@
+{%- set cmds =[] -%}
+  {%- for vm in vms.values() -%}
+    {%- set cmd = ['virt-install'] -%}
+    {%- for key in vm.keys() -%}
+      {%- if key == 'networks' -%}
+        {%- for net in vm[key] -%}
+          {{ cmd.append( '--network '~net ) }}
+        {%- endfor -%}
+      {%- elif key == 'cdrom' -%}
+        {{ cmd.append('--'~key~' '~args.boot_select[vm.name]) }}
+      {%- elif key == 'disks' -%}
+        {%- for disk in vm.disks -%}
+          {{ cmd.append('--disk '~disk) }}
+        {%- endfor -%}
+      {%- else -%}
+        {{ cmd.append('--'~key~' '~vm[key]) }}
+      {%- endif -%}
+    {%- endfor -%}
+    {{ cmds.append( cmd |  join(" ")) }}
+  {%- endfor -%}
+{{ cmds }}
+
