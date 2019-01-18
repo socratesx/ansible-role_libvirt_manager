@@ -1,0 +1,23 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: socratesx
+  description: Configure a QEMU/KVM Host with Libvirt
+  min_ansible_version: 2.4
+  platforms:
+    - name: CentOS
+      versions:
+        - 7
+    - name: Debian
+      versions:
+        - 8
+        - 9
+    - name: Ubuntu
+      versions:
+        - 16
+        - 18
+  galaxy_tags:
+    - virtualization
+    - libvirt
+    - kvm
