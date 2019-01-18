@@ -1,26 +1,26 @@
 ---
-# These two tasks create and set the facts regarding the user's defines in vars/main.yml file. 
+# These two tasks create and set the facts regarding the user's defines in vars/main.yml file.
 # The first command creates a dictionary with several key,value sets that will be used on the next imported tasks.
 #
 # Facts returned:
-# cdrom_args      This list contains the user entries in each VM cdrom argument
-# set disk_args   This list contains the user entries in each VM disks argument
-# set urls        This list contains any urls found as a cdrom argument. This list will be used to download iso images from the Lan or the Internet
-# dirs            This list contains the absolute paths of the directories where each VM stores its Disks
-# boot_images     This list contains the absolute paths of the iso images that will be used in VMs cdrom argument
-# compressed      This list contains any downloaded image that is compressed. The role's custom module decompress.py handles this list's items
-# remote_isos     This list contains any .iso filenames that have been placed manually by the user in the role's file folder.
-# existing_disks  This dict contains any existing disks that the VM will use. The disk file must be present in the files folder.
-# boot_select     This dict contains key,value pairs of each vm and its bootimage that will be used in the resulted command.
-# args            This dict contains all the above variables
-# cmds            This list contains the virt-install commands to be invoked on the target host
+# cdrom_args      contains the user entries in each VM cdrom argument.
+# set disk_args   contains the user entries in each VM disks argument.
+# set urls        contains any urls found as a cdrom argument. It will be used to download iso images.
+# dirs            contains the absolute paths of the directories where each VM stores its Disks.
+# boot_images     contains the absolute paths of the iso images that will be used in VMs cdrom argument.
+# compressed      contains any downloaded image that is compressed. decompress.py handles this list's items.
+# remote_isos     contains any .iso filenames that have been placed manually by the user in the role's file folder.
+# existing_disks  contains any existing disks that the VM will use. The disk file must be present in the files folder.
+# boot_select     contains key,value pairs of each vm and its bootimage that will be used in the resulted command.
+# args            contains all the above variables.
+# cmds            contains the virt-install commands to be invoked on the target host.
 #
 # Required Variables:
 # libvirt_boot_image_folder   String: Folder Path of the libvirt boot images
 # vms                         Dict: Contains the VMs to be provisioned in vars/main.yml
 
 - name: Reading the VMs File and Setting the facts
-  set_fact: 
+  set_fact:
     args: >
       {% set cdrom_args=[] -%}
       {%- set disk_args=[] -%}
@@ -30,9 +30,9 @@
       {%- set compressed=[] -%}
       {%- set remote_files=[] -%}
       {%- set existing_disks={} -%}
-      {%- set boot_select={} -%}      
+      {%- set boot_select={} -%}
       {%- for vm in vms.values() -%}
-        {%- if vm.cdrom is defined -%}         
+        {%- if vm.cdrom is defined -%}
           {%- if vm.cdrom|regex_search( 'http|ftp' ) -%}
             {{- urls.append( vm.cdrom ) -}}
             {%- if vm.cdrom.endswith(( '.gz', '.bz2', '.zip' )) -%}
@@ -47,7 +47,7 @@
             {%- if vm.cdrom | dirname -%}
               {{- boot_images.append( vm.cdrom ) -}}
               {{- boot_select.__setitem__( vm.name, vm.cdrom ) -}}
-            {%- else -%} 
+            {%- else -%}
               {{- remote_files.append( vm.cdrom ) -}}
               {%- if vm.cdrom.endswith(( '.gz', '.bz2', '.zip' )) -%}
                 {{- compressed.append( vm.cdrom ) -}}
@@ -87,11 +87,11 @@
   debug:
     msg: "{{ args }}"
 
-#  The following task reads the vms.yml file and builds a virt-install command string for every defined vm. 
-#  Normally the command will be created by combining the key,value pairs in the vm definition files. 
-#  This is true except the cdrom argument. If it is not an absolute path, it can be a filename 
-#  or a url so the end command will use an appropriate absolute path, where the image will be located on the vm host. 
-#  Of course, since a VM can have more than one Network interfaces or disks defined, 
+#  The following task reads the vms.yml file and builds a virt-install command string for every defined vm.
+#  Normally the command will be created by combining the key,value pairs in the vm definition files.
+#  This is true except the cdrom argument. If it is not an absolute path, it can be a filename.
+#  or a url so the end command will use an appropriate absolute path, where the image will be located on the vm host.
+#  Of course, since a VM can have more than one Network interfaces or disks defined,
 #  the arguments will be feeded from the corresponding list in the vars/main.yml.
 - name: Create Commands and store them in a list
   set_fact:

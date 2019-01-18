@@ -17,10 +17,12 @@
   with_items: "{{ args.urls }}"
   register: download_results
 
-# This is a custom module that is created for this role just to decompress downloaded files that are just compressed but not archived (e.g boot-image.iso.gz). 
-# If the files are archived then the core module unarchive can be used instead. Becareful, this module requires python 2.7 or newer.
+# This is a custom module that is created for this role just to decompress downloaded files that are just compressed
+# but not archived (e.g boot-image.iso.gz).
+# If the files are archived then the core module unarchive can be used instead. 
+# Be careful, this module requires python 2.7 or newer.
 - name: Decompressing ISO files if they are Compressed.
-  decompress:   
+  decompress:
     src: "{{libvirt_boot_image_folder}}{{item}}"
     force: yes
   when: ansible_python.version.minor>=7

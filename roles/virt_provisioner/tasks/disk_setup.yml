@@ -4,9 +4,9 @@
   file:
     path: "{{ item }}"
     state: directory
-  with_items: "{{ args.dirs}}"
-  
-# If the user defined any pre-existing Disks, then the following task will copy them to the VM folder on VM Host. 
+  with_items: "{{ args.dirs }}"
+
+# If the user defined any pre-existing Disks, then the following task will copy them to the VM folder on VM Host.
 # The key,values of the existing_disks fact will be used for the following task.
 - name: Copying existing disk files found in existing_disks fact
   copy:
