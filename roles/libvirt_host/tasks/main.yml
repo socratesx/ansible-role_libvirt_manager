@@ -5,12 +5,12 @@
     repo: "{{ item }}"
     state: present
   with_items: "{{ vm_host_repos_ubuntu }}"
-  when: ansible_distribution == 'Ubuntu' 
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Installing Libvirt Packages and Depedencies
   package: 
      name: "{{ packages[ansible_distribution] }}"
-     state: latest
+     state: present
   notify:
     - start libvirtd
 
