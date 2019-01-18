@@ -19,21 +19,18 @@
 # For more information on how to set these variables check the defaults/main.yml file. It is best to override only the variables that you need different.
 #
 # Example:
-
 # Since my setup is located in Greece, I overrided the default ubuntu repos selecting the nearest location.
 vm_host_repos_ubuntu:
   - "deb http://gr.archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} main universe multiverse restricted"
   - "deb http://gr.archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-security main universe multiverse restricted"
   - "deb http://gr.archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-updates main universe multiverse restricted"
   - "deb http://gr.archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-backports main universe multiverse restricted"
-
+#
 # I want the KVM host to have the following IP settings. Everything else I can leave them to their defaults
 #vm_host_br_ip: '192.168.2.3'
 #vm_host_br_netmask: '255.255.255.0'
 #vm_host_br_gw: '192.168.2.1'
-
+#
 # I override the default search domain which is undefined in default vars, to my search domain 'soc.home'
 vm_host_search_domain:
   - 'soc.home'
-
-

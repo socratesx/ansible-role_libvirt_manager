@@ -1,15 +1,17 @@
 ---
+# If the remote_files fact contains items, it means that the user defined a file in the cdrom arg.
+# This task copies this file from role's files folder to the vm host so it can be used during VM installation.
 
-- name: If the remote_files fact contains items, it means that the user defined a file in the cdrom arg. This task copies this file from role's files folder to the vm host so it can be used during VM installation.
+- name: Copying remote files found in in remote_files list fact
   copy:
-    src: "{{item}}"
-    dest: "{{libvirt_boot_image_folder}}"
-  with_items: "{{args.remote_files}}"
+    src: "{{ item }}"
+    dest: "{{ libvirt_boot_image_folder }}"
+  with_items: "{{ args.remote_files }}"
 
 - name: If the urls fact is populated then this task will download the image fom each item in urls list
   get_url:
-    url: "{{item}}"
-    dest: "{{libvirt_boot_image_folder}}{{item|basename}}"
+    url: "{{ item }}"
+    dest: "{{ libvirt_boot_image_folder }}{{ item|basename }}"
     owner: root
     timeout: 600
   with_items: "{{ args.urls }}"
@@ -17,7 +19,7 @@
 
 # This is a custom module that is created for this role just to decompress downloaded files that are just compressed but not archived (e.g boot-image.iso.gz). 
 # If the files are archived then the core module unarchive can be used instead. Becareful, this module requires python 2.7 or newer.
-- name: Extracting ISO files, if Boot Images are Compressed. The fact compressed contains all the images that need decompression. 
+- name: Decompressing ISO files if they are Compressed.
   decompress:   
     src: "{{libvirt_boot_image_folder}}{{item}}"
     force: yes
@@ -25,8 +27,6 @@
   with_items: "{{args.compressed}}"
   register: decomp
 
-- name: debug decomp
+- name: Decompression results
   debug:
-    msg: "{{decomp}}"
-
-
+    msg: "{{ decomp }}"

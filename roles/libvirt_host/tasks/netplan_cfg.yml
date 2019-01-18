@@ -12,9 +12,9 @@
 
 - name: "INFO: Default IPv4 Interface"
   debug:
-    msg: "{{ansible_default_ipv4.interface}}"
+    msg: "{{ ansible_default_ipv4.interface }}"
 
-- name: Create Netplan Configuration File if define bridge Interface does not exist (Force = No, If configuration file exists the module will not replace it. If you want to overwrite, use force=yes )
+- name: Create Netplan Configuration File if bridge Interface does not exist
   template:
     src: netplan_bridge_config.j2
     dest: /etc/netplan/10-bridge_config.yaml

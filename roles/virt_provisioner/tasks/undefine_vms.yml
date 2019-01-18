@@ -1,6 +1,5 @@
 ---
 
-
 - name: 'Destroy VMs'
   shell: status=$(virsh domstate "{{item.name}}") && if [ "$status" == "running" ]; then (virsh destroy "{{item.name}}"); fi
   with_items: "{{vms.values()}}"
@@ -15,5 +14,3 @@
 - name: 'Undefine VMs'
   raw: " virsh undefine {{item.name}}"
   with_items: "{{vms.values()}}"
- 
-    

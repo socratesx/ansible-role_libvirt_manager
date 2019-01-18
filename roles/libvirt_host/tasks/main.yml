@@ -2,14 +2,14 @@
 
 - name: If the target host runs Ubuntu, set up required repositories for virt-install package
   apt_repository:
-    repo: "{{item}}"
+    repo: "{{ item }}"
     state: present
-  with_items: "{{vm_host_repos_ubuntu}}"
+  with_items: "{{ vm_host_repos_ubuntu }}"
   when: ansible_distribution == 'Ubuntu' 
 
 - name: Installing Libvirt Packages and Depedencies
   package: 
-     name: "{{packages[ansible_distribution]}}"
+     name: "{{ packages[ansible_distribution] }}"
      state: latest
   notify:
     - start libvirtd
@@ -20,4 +20,3 @@
 
 - name: Running Handlers
   meta: flush_handlers
-

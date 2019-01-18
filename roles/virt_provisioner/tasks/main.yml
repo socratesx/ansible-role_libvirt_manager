@@ -1,13 +1,13 @@
 ---
-
-- name: Parse VMs File and Set Facts according to the user's Variables in /vars/ and if variables are undefined in /defaults/
+# Parse VMs File and Set Facts according to the user's Variables in /vars/ and if variables are undefined in /defaults/
+- name: Parsing vars and creating facts
   include_tasks: set_facts.yml
 
-- name: Begin Disk related tasks such as moving pre-existing disks and creating VMs directories
+- name: Begin Disk related tasks such as moving pre-existing disks and creating VMs directories.
   include_tasks: disk_setup.yml
 
-- name: Begin boot related tasks such as ISO image download or move, extract etc. 
+- name: Begin boot related tasks such as ISO image download or move, extract etc.
   include_tasks:  boot_image_setup.yml
 
-- name: Invoking Virt-install commands on the Target to define new vms according to the file
+- name: Invoking Virt-install commands on the Target to define new vms found in vm definition file.
   include_tasks: invoke_virt-install.yml
